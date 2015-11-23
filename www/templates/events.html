@@ -1,4 +1,8 @@
 <ion-view view-title="Events">
+<ion-nav-buttons hide-back-button="true">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+    <button side="right" id="addBtn" class="button icon ion-gear-a button-positive"></button>
+  </ion-nav-buttons>
   <ion-content overflow-scroll=”true”>
     <ion-list>
       <ion-item ng-repeat="playlist in events" href="#/app/events/{{playlist.id}}">

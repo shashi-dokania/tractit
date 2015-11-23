@@ -33,6 +33,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB'])
     controller: 'AppCtrl'
   })
 
+    .state('app.home', {
+    url: '/home',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/home.html'
+      }
+    }
+  })
+
   .state('app.login', {
     url: '/login',
     views: {
@@ -46,24 +55,24 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB'])
     url: '/logout'
   })
 
-  .state('app.search', {
-    url: '/search',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/search.html'
-      }
-    },
-    controller: 'AppCtrl'
-  })
+  // .state('app.search', {
+  //   url: '/search',
+  //   views: {
+  //     'menuContent': {
+  //       templateUrl: 'templates/search.html'
+  //     }
+  //   },
+  //   controller: 'AppCtrl'
+  // })
 
-  .state('app.browse', {
-      url: '/browse',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/browse.html'
-        }
-      }
-    })
+  // .state('app.browse', {
+  //     url: '/browse',
+  //     views: {
+  //       'menuContent': {
+  //         templateUrl: 'templates/browse.html'
+  //       }
+  //     }
+  //   })
 
     .state('app.events', {
       url: '/events',
@@ -85,5 +94,5 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB'])
     }
   });
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/events');
+  $urlRouterProvider.otherwise('/app/home');
 });

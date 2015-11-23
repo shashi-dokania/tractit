@@ -1,5 +1,8 @@
 /* Empty. Add your own CSS if you like */
 
-#playlist {
+#home {
   background-color: teal;
+}
+.homeBody {
+  margin-top: 65%;
 }

@@ -207,11 +207,11 @@ var openFB = (function () {
 
         if (token) {
             logoutWindow = window.open(logoutURL + '?access_token=' + token + '&next=' + logoutRedirectURL, '_blank', 'location=no,clearcache=yes');
-            if (runningInCordova) {
+            //if (runningInCordova) {
                 setTimeout(function() {
                     logoutWindow.close();
                 }, 700);
-            }
+            //}
         }
 
         if (callback) {

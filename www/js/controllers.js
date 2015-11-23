@@ -47,6 +47,8 @@ angular.module('starter.controllers', ['ngOpenFB'])
     ngFB.login({scope: 'email, user_friends'})
     .then(function (response) {
       if (response.status === 'connected') {
+        angular.extend($scope.fbData, response);
+        console.log($scope.fbData.status);
         console.log('Facebook login succeeded');
         $scope.closeLogin();
         
@@ -88,17 +90,38 @@ angular.module('starter.controllers', ['ngOpenFB'])
     });
   };
 
+  $scope.eventHandler = function () {
+    console.log('inside eventHandler...')
+    if ( $scope.fbData.status === undefined ) {
+      console.log('reached PlaylistsCtrl @104')
+      alert('you are not signed in!');
+      $location.path('/app/home');
+    } else {
+      $location.path('/app/events');
+    }
+  };
+
   $scope.logout = function () {
     ngFB.logout()
     .then(function (response) {
-      $location.path('/app/login');
-    }, function (error) {
-      console.log(error);
+      $scope.fbData = {};
+      $location.path('/app/home');
     });
   };
 })
 
-.controller('PlaylistsCtrl', function($scope) {
+.controller('PlaylistsCtrl', function ($scope, $location) {
+  console.log('reached PlaylistsCtrl @102')
+  // $scope.eventHandler = function () {
+  //   console.log('inside eventHandler...')
+  //   if ( $scope.fbData.status === undefined ) {
+  //     console.log('reached PlaylistsCtrl @104')
+  //     alert('you are not signed in!');
+  //     $location.path('/app/home');
+  //   } else {
+  //     $location.path('/app/events');
+  //   }
+  // }
   $scope.events = [
     { title: 'Reggae', id: 1, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
     { title: 'Chill', id: 2, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },

@@ -18,6 +18,9 @@
     </ion-header-bar>
     <ion-content>
       <ion-list>
+      <ion-item menu-close href="#/app/home">
+          Home
+        </ion-item>
         <ion-item menu-close ng-click="login()">
           Login
         </ion-item>
@@ -27,7 +30,8 @@
         <ion-item menu-close href="#/app/browse">
           Browse
         </ion-item> -->
-        <ion-item menu-close href="#/app/events">
+        <ion-item menu-close ng-click="eventHandler()"> 
+        <!-- href="#/app/events"> -->
           Events
         </ion-item>
         <ion-item menu-close ng-click="logout()">
