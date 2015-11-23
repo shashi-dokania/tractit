@@ -1,0 +1,12 @@
+<ion-view view-title="Events">
+  <ion-content overflow-scroll=”true”>
+    <ion-list>
+      <ion-item ng-repeat="playlist in events" href="#/app/events/{{playlist.id}}">
+        <strong>Name: </strong>{{playlist.title}}<br>
+        <strong>Description: </strong>{{playlist.description}}<br>
+        <strong>Date: </strong>{{playlist.date}}<br>
+        <strong>Time: </strong>{{playlist.time}}
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
