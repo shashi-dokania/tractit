@@ -91,9 +91,9 @@ angular.module('starter.controllers', ['ngOpenFB'])
   };
 
   $scope.eventHandler = function () {
-    console.log('inside eventHandler...')
+    console.log('inside eventHandler...');
     if ( $scope.fbData.status === undefined ) {
-      console.log('reached PlaylistsCtrl @104')
+      console.log('reached PlaylistsCtrl @96');
       alert('you are not signed in!');
       $location.path('/app/home');
     } else {
@@ -108,20 +108,20 @@ angular.module('starter.controllers', ['ngOpenFB'])
       $location.path('/app/home');
     });
   };
+
+  $ionicModal.fromTemplateUrl('templates/createEvent.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.createEventModal = modal;
+  });
+
+  $scope.closeEventModal = function() {
+    $scope.createEventModal.hide();
+  };
+
 })
 
-.controller('PlaylistsCtrl', function ($scope, $location) {
-  console.log('reached PlaylistsCtrl @102')
-  // $scope.eventHandler = function () {
-  //   console.log('inside eventHandler...')
-  //   if ( $scope.fbData.status === undefined ) {
-  //     console.log('reached PlaylistsCtrl @104')
-  //     alert('you are not signed in!');
-  //     $location.path('/app/home');
-  //   } else {
-  //     $location.path('/app/events');
-  //   }
-  // }
+.controller('EventsCtrl', function ($scope, $location) {
   $scope.events = [
     { title: 'Reggae', id: 1, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
     { title: 'Chill', id: 2, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
@@ -132,5 +132,21 @@ angular.module('starter.controllers', ['ngOpenFB'])
   ];
 })
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('PlaylistCtrl', function ($scope, $location, $stateParams) {
+
+  // $ionicModal.fromTemplateUrl('templates/createEvent.html', {
+  //   scope: $scope
+  // }).then(function(modal) {
+  //   $scope.createEventModal = modal;
+  //});
+
+  $scope.addUser = function (list) {
+    User.addUser($scope.user)
+    .then(function () {
+      $location.path('/app/events');
+    }, function (error) {
+      console.log(error);
+    })
+    
+  };
 });

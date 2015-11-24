@@ -79,7 +79,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB'])
       views: {
         'menuContent': {
           templateUrl: 'templates/events.html',
-          controller: 'PlaylistsCtrl'
+          controller: 'EventsCtrl'
+        }
+      }
+    })
+
+    .state('app.createEvent', {
+      url: '/events/createEvent',
+      views: {
+      'menuContent': {
+        templateUrl: 'templates/createEvent.html'
         }
       }
     })
@@ -92,7 +101,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB'])
         controller: 'PlaylistCtrl'
       }
     }
-  });
+  })
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/home');
 });

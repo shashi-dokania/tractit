@@ -1,0 +1,50 @@
+<ion-view view-title="Create Event" id="createEvent">
+  <ion-content>
+    <div id="createEventForm">
+      <form ng-submit="">
+        <div class="list">
+          
+          <label class="item item-input">
+            <span class="input-label">Name</span>
+            <input type="text" ng-model="a">
+          </label>
+          
+          <label class="item item-input">
+            <span class="input-label">Description</span>
+            <input type="text" ng-model="b">
+          </label>
+          
+          <label class="item item-input">
+            <span class="input-label">Date</span>
+            <input type="date" ng-model="c">
+          </label>
+          
+          <label class="item item-input">
+            <span class="input-label">Start-Time</span>
+            <input type="time" ng-model="d">
+          </label>
+          
+          <label class="item item-input">
+            <span class="input-label">End-Time</span>
+            <input type="time" ng-model="e">
+          </label>
+          
+          <label class="item item-input">
+            <span class="input-label">Friends</span>
+            <input type="text" ng-model="f">
+          </label>
+          
+          <label class="item">
+            <button class="button button-block button-positive" type="submit" ng-click="">Add</button>
+          </label>
+
+          <label class="item">
+            <button class="button button-block button-positive" type="submit" ng-click="">close</button>
+          </label>
+        
+        </div>
+      </form>
+    </div>
+  </ion-content>
+</ion-view>
+  
