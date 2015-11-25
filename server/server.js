@@ -6,20 +6,20 @@ var http = require('http');
 
 var app = express();
 
-app.use(express.static(__dirname + '/../www'));
+// app.use(express.static(__dirname + '/../www'));
 mongoose.connect('mongodb://localhost/tracker'); //process.env.CUSTOMCONNSTR_MONGOLAB_URI || 
-var db = mongoose.connection;
+// var db = mongoose.connection;
 
-db.on('error', function (err) {
-console.log('connection error', err);
-});
-db.once('open', function () {
-console.log('connected.');
-});
+// db.on('error', function (err) {
+// console.log('connection error', err);
+// });
+// db.once('open', function () {
+// console.log('connected.');
+// });
 
 // middleware(app, express);
 
-var port = 8000;
+var port = process.env.PORT || 8000;
 
 
 
@@ -56,7 +56,7 @@ io.on('connection', function (socket) {
     socket.on('getEvents', function(id) {
       console.log('id from get events in server file......', id);
       eventController.getEventList(id, socket);
-    })
+    });
 });
 
 module.exports = app;

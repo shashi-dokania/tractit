@@ -9,16 +9,14 @@ module.exports = {
     findAll({id: id})
     .then(function (event) {
       //console.log(event);
-      //response.json(event);
       socket.emit('retrieveEvent', event);
     })
     // .fail(function (error) {
-    //   next(error);
+    //   console.error(error);
     // });
   },
 
   postEvent: function (info) {
-    // to do for friends invited
 
     var id = info.id;
     var friends = info.friends;
@@ -33,16 +31,6 @@ module.exports = {
     var create;
     var newEvent;
 
-    // create = Q.nbind(Event.create, Event);
-    // newEvent = {
-    //   friends: friends,
-    //   address: address,
-    //   description: description,
-    //   startDate: startDate,
-    //   endDate: endDate,
-    //   time: time
-    // };
-    //  return create(newEvent);
     var newEvent = new Event({
       id: id,
       friends: friends,
@@ -52,14 +40,12 @@ module.exports = {
       endTime: endTime,
       date: date,
       createdBy: createdBy
-
     });
 
-    newEvent.save(function (err, event) {
-      if (err) {
-        console.error(err);
+    newEvent.save(function (error, event) {
+      if (error) {
+        console.error(error);
       }
-      //response.status(201).send(event);
     });
   }
 

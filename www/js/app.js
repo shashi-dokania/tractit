@@ -7,7 +7,7 @@
 angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB'])
 
 .run(function($ionicPlatform, ngFB) {
-  ngFB.init({appId: '1520991081546037'});
+  ngFB.init({appId: '810263159095632'});
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -27,6 +27,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB'])
   $stateProvider
 
     .state('app', {
+    cache: false,
     url: '/app',
     abstract: true,
     templateUrl: 'templates/menu.html',
@@ -55,50 +56,33 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB'])
     url: '/logout'
   })
 
-  // .state('app.search', {
-  //   url: '/search',
-  //   views: {
-  //     'menuContent': {
-  //       templateUrl: 'templates/search.html'
-  //     }
-  //   },
-  //   controller: 'AppCtrl'
-  // })
-
-  // .state('app.browse', {
-  //     url: '/browse',
-  //     views: {
-  //       'menuContent': {
-  //         templateUrl: 'templates/browse.html'
-  //       }
-  //     }
-  //   })
-
-    .state('app.events', {
-      url: '/events',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/events.html',
-          controller: 'EventsCtrl'
-        }
-      }
-    })
-
-    .state('app.createEvent', {
-      url: '/events/createEvent',
-      views: {
-      'menuContent': {
-        templateUrl: 'templates/createEvent.html'
-        }
-      }
-    })
-
-  .state('app.single', {
-    url: '/events/:playlistId',
+  .state('app.events', {
+    cache: false,
+    url: '/events',
     views: {
       'menuContent': {
-        templateUrl: 'templates/playlist.html',
-        controller: 'PlaylistCtrl'
+        templateUrl: 'templates/events.html',
+        controller: 'EventsCtrl'
+      }
+    }
+  })
+
+  .state('app.createEvent', {
+    url: '/events/createEvent',
+    views: {
+    'menuContent': {
+      templateUrl: 'templates/createEvent.html'
+      }
+    }
+  })
+
+  .state('app.map', {
+    cache: false,
+    url: '/events/map',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/map.html',
+        controller: 'MapController'
       }
     }
   })

@@ -1,7 +1,7 @@
-var eventController = require('./eventController.js');
+// var eventController = require('./eventController.js');
 
-module.exports = function (app) {
+// module.exports = function (app) {
 
-  app.get('/', eventController.getEventList);
-  app.post('/', eventController.postEvent);
-};
+//   app.get('/', eventController.getEventList);
+//   app.post('/', eventController.postEvent);
+// };

@@ -71,9 +71,6 @@ angular.module('starter.controllers', ['ngOpenFB'])
           for (var i = 0; i < response.data.length; i++){
             $scope.friends.push(response.data[i]);
           }
-          // response.data.forEach(function(friends) {
-          //   $scope.friends.push(friends.name);
-          // })
           console.log('friends array.....', $scope.friends);
           angular.extend($scope.fbData, response);
         }, function (error) {
@@ -95,8 +92,7 @@ angular.module('starter.controllers', ['ngOpenFB'])
         }, function (error) {
           console.log(error);
         });
-      } 
-        else {
+      } else {
           alert('Facebook login failed');
         }
     });
@@ -109,11 +105,8 @@ angular.module('starter.controllers', ['ngOpenFB'])
       alert('you are not signed in!');
       $location.path('/app/home');
     } else {
-
       console.log('from events controller....', $scope.fbData.id);
-
       socket.emit('getEvents', $scope.fbData.id);
-
       console.log('emitting get events......');
       $location.path('/app/events');
     }
@@ -125,16 +118,6 @@ angular.module('starter.controllers', ['ngOpenFB'])
       $scope.fbData = {};
       $location.path('/app/home');
     });
-  };
-
-  $ionicModal.fromTemplateUrl('templates/createEvent.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.createEventModal = modal;
-  });
-
-  $scope.closeEventModal = function() {
-    $scope.createEventModal.hide();
   };
 
   $scope.event = {};
@@ -160,39 +143,88 @@ angular.module('starter.controllers', ['ngOpenFB'])
     }
     console.log('friend list.....', $scope.invitedFriendList);
   };
-
-  // socket.on('retrieveEvent', function (events) {
-  //   console.log('retrieve event through socket....', events);
-  // })
-
 })
 
 .controller('EventsCtrl', function ($scope, $location) {
-  // $scope.events = [
-  //   { title: 'Reggae', id: 1, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-  //   { title: 'Chill', id: 2, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-  //   { title: 'Dubstep', id: 3, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-  //   { title: 'Indie', id: 4, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-  //   { title: 'Rap', id: 5, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-  //   { title: 'Cowbell', id: 6, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' }
-  // ];
-  // console.log('from events controller....', $scope.fbData.id)
-  // socket.emit('getEvents', $scope.fbData.id);
-  // console.log('emitting get events......');
   $scope.events = "";
   socket.on('retrieveEvent', function (events) {
     console.log('retrieve event through socket....', events);
     $scope.events = events;
   });
-
 })
 
-.controller('PlaylistCtrl', function ($scope, $location, $stateParams) {
+.controller('MapController', function($scope, $ionicLoading, $compile) {
 
-  // $ionicModal.fromTemplateUrl('templates/createEvent.html', {
-  //   scope: $scope
-  // }).then(function(modal) {
-  //   $scope.createEventModal = modal;
-  //});
+  console.log('inside mapcontroller....');
 
-});
+  $scope.initialize = function() {
+    console.log('lat', $scope.latitude)
+    var myLatlng = new google.maps.LatLng($scope.latitude, $scope.longitude);
+    console.log('initialize function...', myLatlng);
+    
+    var mapOptions = {
+      center: myLatlng,
+      zoom: 16,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map = new google.maps.Map(document.getElementById("map"),
+        mapOptions);
+
+
+    var marker = new google.maps.Marker({
+      position: myLatlng,
+      map: map,
+      title: 'Uluru (Ayers Rock)'
+    });
+
+    google.maps.event.addListener(marker, 'click', function() {
+      infowindow.open(map,marker);
+    });
+
+    $scope.map = map;
+  };
+  //google.maps.event.addDomListener(window, 'load', initialize);
+  $scope.latitude = '';
+  $scope.longitude = '';
+
+  $scope.GetLocation = function (address) {
+    console.log('in GetLocation function....', address);
+    
+    var geocoder = new google.maps.Geocoder();
+    
+    geocoder.geocode({ 'address': address }, function (results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        var latitude = results[0].geometry.location.lat();
+        var longitude = results[0].geometry.location.lng();
+        console.log('set lat', $scope.latitude);
+
+        var myLatlng = new google.maps.LatLng(latitude, longitude);
+      
+        var mapOptions = {
+          center: myLatlng,
+          zoom: 16,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("map"),
+            mapOptions);
+
+
+        var marker = new google.maps.Marker({
+          position: myLatlng,
+          map: map,
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(map,marker);
+        });
+
+        $scope.map = map;
+      } else {
+          console.log("Request failed.");
+        }
+    });
+  };
+
+  
+})
+
