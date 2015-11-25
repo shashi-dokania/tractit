@@ -7,7 +7,7 @@
 angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB'])
 
 .run(function($ionicPlatform, ngFB) {
-  ngFB.init({appId: '810263159095632'});
+  ngFB.init({appId: '1520991081546037'});
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)

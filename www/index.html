@@ -26,6 +26,12 @@
   </head>
 
   <body ng-app="starter">
+
+    <script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
+    <script>
+        var socket = io.connect('http://localhost:8000');
+    </script>
+
     <ion-nav-view></ion-nav-view>
   </body>
 </html>

@@ -6,36 +6,53 @@
           
           <label class="item item-input">
             <span class="input-label">Name</span>
-            <input type="text" ng-model="a">
+            <input type="text" ng-model="event.name">
           </label>
           
           <label class="item item-input">
             <span class="input-label">Description</span>
-            <input type="text" ng-model="b">
+            <input type="text" ng-model="event.description">
+          </label>
+
+          <label class="item item-input">
+            <span class="input-label">Address</span>
+            <input type="text" ng-model="event.address">
           </label>
           
           <label class="item item-input">
             <span class="input-label">Date</span>
-            <input type="date" ng-model="c">
+            <input type="date" ng-model="event.date">
           </label>
           
           <label class="item item-input">
             <span class="input-label">Start-Time</span>
-            <input type="time" ng-model="d">
+            <input type="time" ng-model="event.startTime">
           </label>
           
           <label class="item item-input">
             <span class="input-label">End-Time</span>
-            <input type="time" ng-model="e">
+            <input type="time" ng-model="event.endTime">
           </label>
           
+          <!-- <label class="item item-input">
+            <span class="input-label">Friends</span> -->
+            <!-- <input type="text" ng-model="event.friends"> -->
+          <!-- </label> -->
+
           <label class="item item-input">
             <span class="input-label">Friends</span>
-            <input type="text" ng-model="f">
+            <ion-list>
+              <ion-item ng-repeat="friend in friends" ng-click="invitedFriends(friend)">
+          <label class="checkbox">
+            <input type="checkbox">
           </label>
-          
+              {{ friend.name }}
+              </ion-item>
+            </ion-list>
+          </label>
+ 
           <label class="item">
-            <button class="button button-block button-positive" type="submit" ng-click="">Add</button>
+            <button class="button button-block button-positive" type="submit" ng-click="postEvent()">Add</button>
           </label>
 
           <label class="item">

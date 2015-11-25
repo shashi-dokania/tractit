@@ -48,7 +48,7 @@ angular.module('starter.controllers', ['ngOpenFB'])
     .then(function (response) {
       if (response.status === 'connected') {
         angular.extend($scope.fbData, response);
-        console.log($scope.fbData.status);
+        
         console.log('Facebook login succeeded');
         $scope.closeLogin();
         
@@ -56,13 +56,25 @@ angular.module('starter.controllers', ['ngOpenFB'])
         .then(function (response) {
           console.log(response);
           angular.extend($scope.fbData, response);
+          console.log("User ID: ", $scope.fbData.id);
+
+          socket.emit('getEvents', $scope.fbData.id);
+
         }, function (error) {
           console.log(error);
         });
 
+        $scope.friends = [];
         ngFB.api({path: '/me/friends'})
         .then(function (response) {
-          console.log(response);
+          console.log('friends.....', response.data);
+          for (var i = 0; i < response.data.length; i++){
+            $scope.friends.push(response.data[i]);
+          }
+          // response.data.forEach(function(friends) {
+          //   $scope.friends.push(friends.name);
+          // })
+          console.log('friends array.....', $scope.friends);
           angular.extend($scope.fbData, response);
         }, function (error) {
           console.log(error);
@@ -97,6 +109,12 @@ angular.module('starter.controllers', ['ngOpenFB'])
       alert('you are not signed in!');
       $location.path('/app/home');
     } else {
+
+      console.log('from events controller....', $scope.fbData.id);
+
+      socket.emit('getEvents', $scope.fbData.id);
+
+      console.log('emitting get events......');
       $location.path('/app/events');
     }
   };
@@ -119,17 +137,54 @@ angular.module('starter.controllers', ['ngOpenFB'])
     $scope.createEventModal.hide();
   };
 
+  $scope.event = {};
+  $scope.postEvent = function () {
+    //console.log("FB ID:...", $scope.fbData.id);
+    //console.log("FB Name:...", $scope.fbData.name);
+    $scope.event.id = $scope.fbData.id;
+    $scope.event.name = $scope.fbData.name;
+    $scope.event.friends = $scope.invitedFriendList;
+    console.log($scope.event);
+    socket.emit('formData', $scope.event);
+    socket.emit('getEvents', $scope.fbData.id);
+  }
+  
+  $scope.invitedFriendList = [];
+  $scope.invitedFriends = function (friend) {
+    console.log('inside invitedFriends function....', friend);
+
+    if ( $scope.invitedFriendList.indexOf(friend) === -1 ) {
+      $scope.invitedFriendList.push(friend);
+    } else {
+      $scope.invitedFriendList.splice($scope.invitedFriendList.indexOf(friend), 1);
+    }
+    console.log('friend list.....', $scope.invitedFriendList);
+  };
+
+  // socket.on('retrieveEvent', function (events) {
+  //   console.log('retrieve event through socket....', events);
+  // })
+
 })
 
 .controller('EventsCtrl', function ($scope, $location) {
-  $scope.events = [
-    { title: 'Reggae', id: 1, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-    { title: 'Chill', id: 2, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-    { title: 'Dubstep', id: 3, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-    { title: 'Indie', id: 4, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-    { title: 'Rap', id: 5, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
-    { title: 'Cowbell', id: 6, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' }
-  ];
+  // $scope.events = [
+  //   { title: 'Reggae', id: 1, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
+  //   { title: 'Chill', id: 2, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
+  //   { title: 'Dubstep', id: 3, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
+  //   { title: 'Indie', id: 4, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
+  //   { title: 'Rap', id: 5, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' },
+  //   { title: 'Cowbell', id: 6, description: 'Thanksgiving', date: '11/27/2015', time: '7:00 p.m - 10:00 p.m' }
+  // ];
+  // console.log('from events controller....', $scope.fbData.id)
+  // socket.emit('getEvents', $scope.fbData.id);
+  // console.log('emitting get events......');
+  $scope.events = "";
+  socket.on('retrieveEvent', function (events) {
+    console.log('retrieve event through socket....', events);
+    $scope.events = events;
+  });
+
 })
 
 .controller('PlaylistCtrl', function ($scope, $location, $stateParams) {
@@ -140,13 +195,4 @@ angular.module('starter.controllers', ['ngOpenFB'])
   //   $scope.createEventModal = modal;
   //});
 
-  $scope.addUser = function (list) {
-    User.addUser($scope.user)
-    .then(function () {
-      $location.path('/app/events');
-    }, function (error) {
-      console.log(error);
-    })
-    
-  };
 });
