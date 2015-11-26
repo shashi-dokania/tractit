@@ -243,6 +243,7 @@ var openFB = (function () {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
+                    // console.log('inside openfb....', xhr.responseText)
                     if (obj.success) obj.success(JSON.parse(xhr.responseText));
                 } else {
                     var error = xhr.responseText ? JSON.parse(xhr.responseText).error : {message: 'An error has occurred'};

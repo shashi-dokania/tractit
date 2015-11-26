@@ -1,4 +1,4 @@
-angular.module('starter.controllers', ['ngOpenFB'])
+angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
 
 .controller('AppCtrl', function ($scope, $location, $ionicModal, $timeout, ngFB) {
 
@@ -44,7 +44,7 @@ angular.module('starter.controllers', ['ngOpenFB'])
   // };
 
   $scope.fbLogin = function () {
-    ngFB.login({scope: 'email, user_friends'})
+    ngFB.login({scope: 'email, user_friends, user_location'})//, friends_location
     .then(function (response) {
       if (response.status === 'connected') {
         angular.extend($scope.fbData, response);
@@ -65,13 +65,28 @@ angular.module('starter.controllers', ['ngOpenFB'])
         });
 
         $scope.friends = [];
+        $scope.friendsPicturePath = '';
         ngFB.api({path: '/me/friends'})
         .then(function (response) {
-          console.log('friends.....', response.data);
-          for (var i = 0; i < response.data.length; i++){
-            $scope.friends.push(response.data[i]);
+          // console.log('friends.....', response.data);
+          for (var i = 0; i < response.data.length; i++) {
+            
+            var temp = response.data[i];
+            var friendId = response.data[i].id;
+            $scope.friendsPicturePath = '/' + friendId + '/picture';
+            
+            ngFB.api({path: $scope.friendsPicturePath, 
+              params: {redirect: false, height:50, width: 50}
+            })
+            .then(function (response) {
+              temp.picture = response.data.url;
+              $scope.friends.push(temp);
+              // console.log('after adding picture.....', $scope.friends)
+            }, function (error){
+              console.log(error)
+            })
+
           }
-          console.log('friends array.....', $scope.friends);
           angular.extend($scope.fbData, response);
         }, function (error) {
           console.log(error);
@@ -92,6 +107,22 @@ angular.module('starter.controllers', ['ngOpenFB'])
         }, function (error) {
           console.log(error);
         });
+
+        ngFB.api({
+          path: '/me', 
+          params: {}
+        })
+        .then(function (response) {
+          console.log(response);
+          angular.extend($scope.fbData, response);
+          console.log("User ID: ", $scope.fbData.id);
+
+          socket.emit('getEvents', $scope.fbData.id);
+
+        }, function (error) {
+          console.log(error);
+        });
+
       } else {
           alert('Facebook login failed');
         }
@@ -156,7 +187,7 @@ angular.module('starter.controllers', ['ngOpenFB'])
   });
 })
 
-.controller('MapController', function($scope, $ionicLoading, $compile) {
+.controller('MapController', function ($scope, $ionicLoading, $compile, $cordovaGeolocation) {
 
   console.log('inside mapcontroller....');
 
@@ -188,13 +219,38 @@ angular.module('starter.controllers', ['ngOpenFB'])
   //google.maps.event.addDomListener(window, 'load', initialize);
 
   $scope.centerOnMe = function() {
+    console.log("centerOnMe called.....")
     if(!$scope.map) {
       return;
     }
     $scope.loading = $ionicLoading.show({ showBackdrop: true });
 
-    navigator.geolocation.getCurrentPosition(function(pos) {
-      var Latlng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+    // navigator.geolocation.getCurrentPosition(function(pos) {
+    //   var Latlng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+    //   $scope.map.setCenter(Latlng);
+    //   $scope.loading.hide();
+
+    //   var marker = new google.maps.Marker({
+    //     position: Latlng,
+    //     map: $scope.map,
+    //     icon: $scope.fbData.picture
+    //   });
+
+    // google.maps.event.addListener(marker, 'click', function() {
+    //   infowindow.open(map,marker);
+    // });
+
+    // },
+    // function(error) {
+    //   alert('Unable to get location: ' + error.message);
+    // });
+
+  var options = {timeout: 10000, enableHighAccuracy: true};
+  $cordovaGeolocation.getCurrentPosition(options)
+  .then( function(pos) {
+    // success code
+
+    var Latlng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
       $scope.map.setCenter(Latlng);
       $scope.loading.hide();
 
@@ -207,15 +263,13 @@ angular.module('starter.controllers', ['ngOpenFB'])
     google.maps.event.addListener(marker, 'click', function() {
       infowindow.open(map,marker);
     });
+  }, function(error) {
+    // error code
+    alert('Unable to get location: ' + error.message);
+  });
 
-    },
-    function(error) {
-      alert('Unable to get location: ' + error.message);
-    });
+
   };
-  // $scope.latitude = '';
-  // $scope.longitude = '';
-
   $scope.GetLocation = function (address) {
     console.log('in GetLocation function....', address);
     
@@ -229,34 +283,9 @@ angular.module('starter.controllers', ['ngOpenFB'])
         $scope.initialize(latitude, longitude);
         $scope.centerOnMe();
 
-        // var myLatlng = new google.maps.LatLng(latitude, longitude);
-      
-        // var mapOptions = {
-        //   center: myLatlng,
-        //   zoom: 16,
-        //   mapTypeId: google.maps.MapTypeId.ROADMAP
-        // };
-        // var map = new google.maps.Map(document.getElementById("map"),
-        //     mapOptions);
-
-
-        // var marker = new google.maps.Marker({
-        //   position: myLatlng,
-        //   map: map,
-        // });
-
-        // google.maps.event.addListener(marker, 'click', function() {
-        //   infowindow.open(map,marker);
-        // });
-
-        // $scope.map = map;
-
       } else {
           console.log("Request failed.");
         }
     });
   };
-
-  
-})
-
+});
