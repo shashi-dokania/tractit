@@ -88,7 +88,7 @@ angular.module('starter.controllers', ['ngOpenFB'])
         })
         .then(function() {
           console.log("in location after login");
-          $location.path('/app/events'); // '/map'
+          $location.path('/app/events');
         }, function (error) {
           console.log(error);
         });
@@ -101,11 +101,9 @@ angular.module('starter.controllers', ['ngOpenFB'])
   $scope.eventHandler = function () {
     console.log('inside eventHandler...');
     if ( $scope.fbData.status === undefined ) {
-      console.log('reached PlaylistsCtrl @96');
       alert('you are not signed in!');
       $location.path('/app/home');
     } else {
-      console.log('from events controller....', $scope.fbData.id);
       socket.emit('getEvents', $scope.fbData.id);
       console.log('emitting get events......');
       $location.path('/app/events');
@@ -122,15 +120,20 @@ angular.module('starter.controllers', ['ngOpenFB'])
 
   $scope.event = {};
   $scope.postEvent = function () {
-    //console.log("FB ID:...", $scope.fbData.id);
-    //console.log("FB Name:...", $scope.fbData.name);
     $scope.event.id = $scope.fbData.id;
     $scope.event.name = $scope.fbData.name;
     $scope.event.friends = $scope.invitedFriendList;
-    console.log($scope.event);
+    // console.log($scope.event);
     socket.emit('formData', $scope.event);
     socket.emit('getEvents', $scope.fbData.id);
-  }
+    $location.path('/app/events');
+  };
+
+  //TODO
+  $scope.deleteEvent = function () {
+    socket.emit('deleteEvent', $scope.event);
+
+  };
   
   $scope.invitedFriendList = [];
   $scope.invitedFriends = function (friend) {
@@ -157,14 +160,14 @@ angular.module('starter.controllers', ['ngOpenFB'])
 
   console.log('inside mapcontroller....');
 
-  $scope.initialize = function() {
-    console.log('lat', $scope.latitude)
-    var myLatlng = new google.maps.LatLng($scope.latitude, $scope.longitude);
+  $scope.initialize = function (latitude, longitude) {
+    console.log('in initialize function....', latitude, longitude);
+    var myLatlng = new google.maps.LatLng(latitude, longitude);
     console.log('initialize function...', myLatlng);
     
     var mapOptions = {
       center: myLatlng,
-      zoom: 16,
+      zoom: 12,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     var map = new google.maps.Map(document.getElementById("map"),
@@ -173,8 +176,7 @@ angular.module('starter.controllers', ['ngOpenFB'])
 
     var marker = new google.maps.Marker({
       position: myLatlng,
-      map: map,
-      title: 'Uluru (Ayers Rock)'
+      map: map
     });
 
     google.maps.event.addListener(marker, 'click', function() {
@@ -184,8 +186,35 @@ angular.module('starter.controllers', ['ngOpenFB'])
     $scope.map = map;
   };
   //google.maps.event.addDomListener(window, 'load', initialize);
-  $scope.latitude = '';
-  $scope.longitude = '';
+
+  $scope.centerOnMe = function() {
+    if(!$scope.map) {
+      return;
+    }
+    $scope.loading = $ionicLoading.show({ showBackdrop: true });
+
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      var Latlng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+      $scope.map.setCenter(Latlng);
+      $scope.loading.hide();
+
+      var marker = new google.maps.Marker({
+        position: Latlng,
+        map: $scope.map,
+        icon: $scope.fbData.picture
+      });
+
+    google.maps.event.addListener(marker, 'click', function() {
+      infowindow.open(map,marker);
+    });
+
+    },
+    function(error) {
+      alert('Unable to get location: ' + error.message);
+    });
+  };
+  // $scope.latitude = '';
+  // $scope.longitude = '';
 
   $scope.GetLocation = function (address) {
     console.log('in GetLocation function....', address);
@@ -196,29 +225,32 @@ angular.module('starter.controllers', ['ngOpenFB'])
       if (status == google.maps.GeocoderStatus.OK) {
         var latitude = results[0].geometry.location.lat();
         var longitude = results[0].geometry.location.lng();
-        console.log('set lat', $scope.latitude);
+        
+        $scope.initialize(latitude, longitude);
+        $scope.centerOnMe();
 
-        var myLatlng = new google.maps.LatLng(latitude, longitude);
+        // var myLatlng = new google.maps.LatLng(latitude, longitude);
       
-        var mapOptions = {
-          center: myLatlng,
-          zoom: 16,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var map = new google.maps.Map(document.getElementById("map"),
-            mapOptions);
+        // var mapOptions = {
+        //   center: myLatlng,
+        //   zoom: 16,
+        //   mapTypeId: google.maps.MapTypeId.ROADMAP
+        // };
+        // var map = new google.maps.Map(document.getElementById("map"),
+        //     mapOptions);
 
 
-        var marker = new google.maps.Marker({
-          position: myLatlng,
-          map: map,
-        });
+        // var marker = new google.maps.Marker({
+        //   position: myLatlng,
+        //   map: map,
+        // });
 
-        google.maps.event.addListener(marker, 'click', function() {
-          infowindow.open(map,marker);
-        });
+        // google.maps.event.addListener(marker, 'click', function() {
+        //   infowindow.open(map,marker);
+        // });
 
-        $scope.map = map;
+        // $scope.map = map;
+
       } else {
           console.log("Request failed.");
         }

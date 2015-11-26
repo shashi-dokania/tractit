@@ -57,6 +57,11 @@ io.on('connection', function (socket) {
       console.log('id from get events in server file......', id);
       eventController.getEventList(id, socket);
     });
+
+    socket.on('deleteEvent', function (event) {
+      console.log("inside socket delete event....", event);
+      eventController.deleteEvent(event);
+    });
 });
 
 module.exports = app;

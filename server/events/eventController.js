@@ -47,6 +47,10 @@ module.exports = {
         console.error(error);
       }
     });
+  },
+
+  deleteEvent: function (event) {
+    
   }
 
 };
