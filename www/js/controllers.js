@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
 
-.controller('AppCtrl', function ($scope, $location, $ionicModal, $timeout, ngFB) {
+.controller('AppCtrl', function ($scope, $location, $interval, $ionicModal, $timeout, ngFB) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -43,6 +43,8 @@ angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
   //   }, 1000);
   // };
 
+  $scope.intervalFunc;
+
   $scope.fbLogin = function () {
     ngFB.login({scope: 'email, user_friends, user_location'})//, friends_location
     .then(function (response) {
@@ -56,20 +58,10 @@ angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
         .then(function (response) {
           console.log(response);
           angular.extend($scope.fbData, response);
-          // console.log("User ID: ", $scope.fbData.id);
 
+        $scope.intervalFunc = $interval($scope.currentPosition, 3000);
 
-          navigator.geolocation.getCurrentPosition(function(pos) {
-          var latitude = pos.coords.latitude;
-          var longitude = pos.coords.longitude;
-
-          var coords = {id: $scope.fbData.id, latitude: latitude, longitude: longitude};
-          socket.emit('updateCoords', coords);
-          }, function(error) {
-            console.log('Unable to get location: ' + error.message);
-          });
-
-          socket.emit('getEvents', $scope.fbData.id);
+        $scope.currentPosition();
 
         }, function (error) {
           console.log(error);
@@ -140,6 +132,20 @@ angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
     });
   };
 
+  $scope.currentPosition = function () {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      var latitude = pos.coords.latitude;
+      var longitude = pos.coords.longitude;
+
+      var coords = {id: $scope.fbData.id, latitude: latitude, longitude: longitude};
+      socket.emit('updateCoords', coords);
+      
+      }, function(error) {
+        console.log('Unable to get location: ' + error.message);
+    });
+    socket.emit('getEvents', $scope.fbData.id);
+  };
+
   $scope.eventHandler = function () {
     console.log('inside eventHandler...');
     if ( $scope.fbData.status === undefined ) {
@@ -153,6 +159,7 @@ angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
   };
 
   $scope.logout = function () {
+    $interval.cancel($scope.intervalFunc);
     ngFB.logout()
     .then(function (response) {
       $scope.fbData = {};
@@ -172,8 +179,9 @@ angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
   };
 
   //TODO
-  $scope.deleteEvent = function () {
-    socket.emit('deleteEvent', $scope.event);
+  $scope.deleteEvent = function (event) {
+    socket.emit('deleteEvent', event);
+    socket.emit('getEvents', $scope.fbData.id);
 
   };
   

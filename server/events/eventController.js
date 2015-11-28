@@ -50,7 +50,7 @@ module.exports = {
   },
 
   deleteEvent: function (event) {
-    
+    Event.remove({"id": event.id});
   },
 
   updateLocation: function (coords) {
