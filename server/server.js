@@ -62,6 +62,11 @@ io.on('connection', function (socket) {
       console.log("inside socket delete event....", event);
       eventController.deleteEvent(event);
     });
+
+    socket.on('updateCoords', function (coords) {
+      console.log("inside socket updateCoords....", coords);
+      eventController.updateLocation(coords);
+    });
 });
 
 module.exports = app;

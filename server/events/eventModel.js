@@ -2,9 +2,13 @@ var mongoose = require('mongoose');
 
 var eventSchema = new mongoose.Schema({
   id: String,
+  latitude: String,
+  longitude: String,
   friends: [{
     id: String,
-    name: String
+    name: String,
+    latitude: String,
+    longitude: String
   }],
   address: String,
   description: String,

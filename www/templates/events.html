@@ -15,7 +15,7 @@
     </div>
     <ion-list>
       <ion-item ng-repeat="event in events" href="#/app/events/map" ng-controller="MapController" 
-      ng-click='GetLocation(event.address)'>
+      ng-click='GetLocation(event)'>
         <!-- <strong>Name: </strong>{{event.name}}<br> -->
         <strong>Description: </strong>{{event.description}}<br>
         <strong>Address: </strong>{{event.address}}<br>

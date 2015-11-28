@@ -56,7 +56,18 @@ angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
         .then(function (response) {
           console.log(response);
           angular.extend($scope.fbData, response);
-          console.log("User ID: ", $scope.fbData.id);
+          // console.log("User ID: ", $scope.fbData.id);
+
+
+          navigator.geolocation.getCurrentPosition(function(pos) {
+          var latitude = pos.coords.latitude;
+          var longitude = pos.coords.longitude;
+
+          var coords = {id: $scope.fbData.id, latitude: latitude, longitude: longitude};
+          socket.emit('updateCoords', coords);
+          }, function(error) {
+            console.log('Unable to get location: ' + error.message);
+          });
 
           socket.emit('getEvents', $scope.fbData.id);
 
@@ -198,7 +209,7 @@ angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
     
     var mapOptions = {
       center: myLatlng,
-      zoom: 12,
+      zoom: 9,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     var map = new google.maps.Map(document.getElementById("map"),
@@ -218,7 +229,7 @@ angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
   };
   //google.maps.event.addDomListener(window, 'load', initialize);
 
-  $scope.centerOnMe = function() {
+  $scope.centerOnMe = function(event) {
     console.log("centerOnMe called.....")
     if(!$scope.map) {
       return;
@@ -245,43 +256,92 @@ angular.module('starter.controllers', ['ngOpenFB', 'ngCordova'])
     //   alert('Unable to get location: ' + error.message);
     // });
 
-  var options = {timeout: 10000, enableHighAccuracy: true};
-  $cordovaGeolocation.getCurrentPosition(options)
-  .then( function(pos) {
+  // var options = {timeout: 10000, enableHighAccuracy: true};
+  // $cordovaGeolocation.getCurrentPosition(options)
+  // .then( function(pos) {
     // success code
 
-    var Latlng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+    // var Latlng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+    var pictureUrl = '';
+    if ( event.id === $scope.fbData.id ) {
+      pictureUrl = $scope.fbData.picture;
+    } else {
+        for ( var j = 0; j < $scope.friends.length; j++ ) {
+            if ( event.id === $scope.friends[j].id ) {
+              pictureUrl = $scope.friends[j].picture;
+            }
+          }
+      }
+    var Latlng = new google.maps.LatLng(event.latitude, event.longitude);
       $scope.map.setCenter(Latlng);
       $scope.loading.hide();
 
       var marker = new google.maps.Marker({
         position: Latlng,
         map: $scope.map,
-        icon: $scope.fbData.picture
+        icon: pictureUrl
       });
 
     google.maps.event.addListener(marker, 'click', function() {
       infowindow.open(map,marker);
     });
-  }, function(error) {
-    // error code
-    alert('Unable to get location: ' + error.message);
-  });
+  // }, function(error) {
+  //   // error code
+  //   alert('Unable to get location: ' + error.message);
+  // });
 
 
   };
-  $scope.GetLocation = function (address) {
-    console.log('in GetLocation function....', address);
+
+
+$scope.centerOnFriends = function(event) {
+    console.log("centerOnFriends called.....")
+    if(!$scope.map) {
+      return;
+    }
+    $scope.loading = $ionicLoading.show({ showBackdrop: true });
+
+    for ( var i = 0; i < event.friends.length; i++ ) { 
+      var Latlng = new google.maps.LatLng(event.friends[i].latitude, event.friends[i].longitude);
+        $scope.map.setCenter(Latlng);
+        $scope.loading.hide();
+        var pictureUrl = '';
+        for ( var j = 0; j < $scope.friends.length; j++ ) {
+          if ( event.friends[i].id === $scope.friends[j].id ) {
+            pictureUrl = $scope.friends[j].picture;
+          }
+        }
+
+        if ( event.friends[i].id === $scope.fbData.id ) {
+            pictureUrl = $scope.fbData.picture;
+          }
+
+        var marker = new google.maps.Marker({
+          position: Latlng,
+          map: $scope.map,
+          icon: pictureUrl
+        });
+
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(map,marker);
+      });
+    }
+  };
+
+
+  $scope.GetLocation = function (event) {
+    console.log('in GetLocation function....');
     
     var geocoder = new google.maps.Geocoder();
     
-    geocoder.geocode({ 'address': address }, function (results, status) {
+    geocoder.geocode({ 'address': event.address }, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var latitude = results[0].geometry.location.lat();
         var longitude = results[0].geometry.location.lng();
         
         $scope.initialize(latitude, longitude);
-        $scope.centerOnMe();
+        $scope.centerOnMe(event);
+        $scope.centerOnFriends(event);
 
       } else {
           console.log("Request failed.");
