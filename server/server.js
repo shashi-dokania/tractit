@@ -5,7 +5,7 @@ var http = require('http');
 
 var app = express();
 
-mongoose.connect('mongodb://localhost/tracker'); //process.env.CUSTOMCONNSTR_MONGOLAB_URI || 
+mongoose.connect(process.env.CUSTOMCONNSTR_MONGOLAB_URI || 'mongodb://localhost/tracker'); //process.env.CUSTOMCONNSTR_MONGOLAB_URI || 
 
 var port = process.env.PORT || 8000;
 
