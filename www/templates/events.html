@@ -14,8 +14,7 @@
         </ion-item>
     </div>
     <ion-list>
-      <ion-item ng-repeat="event in events" href="#/app/events/map" ng-controller="MapController" 
-      ng-click='GetLocation(event)'>
+      <ion-item ng-repeat="event in events">
         <!-- <strong>Name: </strong>{{event.name}}<br> -->
         <strong>Description: </strong>{{event.description}}<br>
         <strong>Address: </strong>{{event.address}}<br>
@@ -24,11 +23,13 @@
         <strong>End-Time: </strong>{{event.endTime}}<br>
         <ion-list ng-repeat="friend in event.friends" ng-controller="MapController">
           <strong>Friends Attending: </strong><span>{{friend.name}}</span>
-      </ion-list>
-      <button id="mapBtn">Click to track location of friends</button>
-      <div>
-        <button id="deleteBtn" ng-click="deleteEvent(event)">Delete</button>
-      </div>
+        </ion-list>
+        <ion-item ng-controller="MapController" ng-click='GetLocation(event)' href="#/app/events/map">
+          <button class="button button-clear" id="mapBtn" >Click to track location of friends</button>
+        </ion-item>
+        <ion-item ng-click="deleteEvent(event)" href="#/app/events">
+          <button class="button button-clear" id="deleteBtn">Delete Event</button>
+        </ion-item>
       </ion-item>
     </ion-list>
   </ion-content>
