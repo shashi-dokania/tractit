@@ -18,7 +18,8 @@ angular.module('starter.controllers', ['ngOpenFB'])
   // Create the login modal that we will use later
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
-  }).then(function(modal) {
+  })
+  .then(function(modal) {
     $scope.modal = modal;
   });
 
@@ -50,12 +51,12 @@ angular.module('starter.controllers', ['ngOpenFB'])
     ngFB.login({scope: 'email, user_friends, user_location'})//, friends_location
 
     .then(function (response) {
-      if (response.status === 'connected') {
+      if ( response.status === 'connected' ) {
         angular.extend($scope.fbData, response);  
-        // console.log('Facebook login succeeded');
+        console.log('Facebook login succeeded');
         $scope.closeLogin();
         
-        ngFB.api({path: '/me'})
+        ngFB.api({ path: '/me' })
         .then(function (response) {
           console.log(response);
           angular.extend($scope.fbData, response);
@@ -67,17 +68,18 @@ angular.module('starter.controllers', ['ngOpenFB'])
         });
 
         $scope.friends = [];
-        $scope.friendsPicturePath = '';
+        $scope.friendsPicturePath;
+
         ngFB.api({path: '/me/friends'})
         .then(function (response) {
           // console.log('friends.....', response.data);
-          for (var i = 0; i < response.data.length; i++) {
-            
+          for ( var i = 0; i < response.data.length; i++ ) { 
             var temp = response.data[i];
             var friendId = response.data[i].id;
             $scope.friendsPicturePath = '/' + friendId + '/picture';
             
-            ngFB.api({path: $scope.friendsPicturePath, 
+            ngFB.api({
+              path: $scope.friendsPicturePath, 
               params: {redirect: false, height:50, width: 50}
             })
             .then(function (response) {
@@ -85,8 +87,8 @@ angular.module('starter.controllers', ['ngOpenFB'])
               $scope.friends.push(temp);
               // console.log('after adding picture.....', $scope.friends)
             }, function (error){
-              console.log(error)
-            })
+              console.log(error);
+            });
           }
           angular.extend($scope.fbData, response);
         }, function (error) {
@@ -99,11 +101,10 @@ angular.module('starter.controllers', ['ngOpenFB'])
         })
         .then(function (response) {
           angular.extend($scope.fbData, {picture: response.data.url});
-          //ClientHelper.getFBdata($scope.me);
-          console.log($scope.fbData.picture);
+          // console.log($scope.fbData.picture);
         })
-        .then(function() {
-          console.log("in location after login");
+        .then(function () {
+          // console.log("in location after login");
           $location.path('/app/events');
         }, function (error) {
           console.log(error);
@@ -131,27 +132,27 @@ angular.module('starter.controllers', ['ngOpenFB'])
   $scope.latitude;
   $scope.longitude;
   $scope.currentPosition = function () {
-    navigator.geolocation.getCurrentPosition(function(pos) {
+    navigator.geolocation.getCurrentPosition(function (pos) {
       $scope.latitude = pos.coords.latitude;
       $scope.longitude = pos.coords.longitude;
 
       var coords = {id: $scope.fbData.id, latitude: $scope.latitude, longitude: $scope.longitude};
       socket.emit('updateCoords', coords);
       
-      }, function(error) {
+      }, function (error) {
         console.log('Unable to get location: ' + error.message);
     });
     socket.emit('getEvents', $scope.fbData.id);
   };
 
   $scope.eventHandler = function () {
-    console.log('inside eventHandler...');
+    // console.log('inside eventHandler...');
     if ( $scope.fbData.status === undefined ) {
       alert('you are not signed in!');
       $location.path('/app/home');
     } else {
       socket.emit('getEvents', $scope.fbData.id);
-      console.log('emitting get events......');
+      // console.log('emitting get events......');
       $location.path('/app/events');
     }
   };
@@ -179,11 +180,11 @@ angular.module('starter.controllers', ['ngOpenFB'])
   };
 
   $scope.deleteEvent = function (event) {
-    console.log('in delete function...', event);
+    // console.log('in delete function...', event);
     socket.emit('deleteEvent', event);
   };
 
-  socket.on('deleted', function() {
+  socket.on('deleted', function () {
     socket.emit('getEvents', $scope.fbData.id);
   });
   
@@ -201,7 +202,7 @@ angular.module('starter.controllers', ['ngOpenFB'])
 
 .controller('EventsCtrl', function ($scope, $location) {
 
-  $scope.events = "";
+  $scope.events;
   socket.on('retrieveEvent', function (events) {
     // console.log('retrieve event through socket....', events);
     $scope.events = events;
@@ -234,18 +235,17 @@ angular.module('starter.controllers', ['ngOpenFB'])
       infowindow.open(map,marker);
     });
 
-    $scope.map = map;
-    
+    $scope.map = map;  
   };
   //google.maps.event.addDomListener(window, 'load', initialize);
 
-  $scope.centerOnMe = function(event) {
+  $scope.centerOnMe = function (event) {
     // console.log("centerOnMe called.....")
     if( !$scope.map ) {
       return;
     }
     //$scope.loading = $ionicLoading.show({ showBackdrop: true });
-    var pictureUrl = '';
+    var pictureUrl;
     if ( event.id === $scope.fbData.id ) {
       pictureUrl = $scope.fbData.picture;
     } else {
@@ -256,7 +256,7 @@ angular.module('starter.controllers', ['ngOpenFB'])
         }
       }
 
-    if (event.latitude) { 
+    if ( event.latitude ) { 
       var Latlng = new google.maps.LatLng(event.latitude, event.longitude);
       $scope.map.setCenter(Latlng);
       //$scope.loading.hide();
@@ -273,8 +273,8 @@ angular.module('starter.controllers', ['ngOpenFB'])
   };
 
 
-$scope.centerOnFriends = function(event) {
-    console.log("centerOnFriends called.....")
+  $scope.centerOnFriends = function (event) {
+    // console.log("centerOnFriends called.....")
     if( !$scope.map ) {
       return;
     }
@@ -317,7 +317,7 @@ $scope.centerOnFriends = function(event) {
     var geocoder = new google.maps.Geocoder();
     
     geocoder.geocode({ 'address': event.address }, function (results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
+      if ( status == google.maps.GeocoderStatus.OK ) {
         var latitude = results[0].geometry.location.lat();
         var longitude = results[0].geometry.location.lng();
         console.log('found latlng....', latitude, longitude);

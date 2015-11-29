@@ -47,7 +47,7 @@ module.exports = {
     });
 
     newEvent.save(function (error, event) {
-      if (error) {
+      if ( error ) {
         console.error(error);
       }
     });
@@ -55,7 +55,7 @@ module.exports = {
 
   deleteEvent: function (event, socket) {
     // console.log('in evntsController delete function', event._id)
-    Event.remove({"_id": event._id}, function (error) {
+    Event.remove({ "_id": event._id }, function (error) {
       if ( error ) {
         console.error(error);
       }
@@ -68,7 +68,7 @@ module.exports = {
   updateLocation: function (coords) {
 
     Event.find({ $or: [ { "id": coords.id }, { "friends.id": coords.id } ] }, function (error, docs) {
-      if (error) {
+      if ( error ) {
         console.log(error);
       }
       for ( var i = 0; i < docs.length; i++ ) {
@@ -78,7 +78,7 @@ module.exports = {
           docs[i].longitude = coords.longitude;
           // console.log('updating from base....')
         }
-        for (var j = 0; j < docs[i].friends.length; j++ ) {
+        for ( var j = 0; j < docs[i].friends.length; j++ ) {
           if ( docs[i].friends[j].id === coords.id ) {
             docs[i].friends[j].latitude = coords.latitude;
             docs[i].friends[j].longitude = coords.longitude;
@@ -88,6 +88,6 @@ module.exports = {
         docs[i].save();
       }
     });
-  }
+  };
 
 };

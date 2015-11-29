@@ -5,7 +5,7 @@ var http = require('http');
 
 var app = express();
 
-mongoose.connect(process.env.CUSTOMCONNSTR_MONGOLAB_URI || 'mongodb://localhost/tracker'); //process.env.CUSTOMCONNSTR_MONGOLAB_URI || 
+mongoose.connect(process.env.CUSTOMCONNSTR_MONGOLAB_URI || 'mongodb://localhost/tracker');
 
 var port = process.env.PORT || 8000;
 
@@ -23,7 +23,7 @@ io.on('connection', function (socket) {
     eventController.postEvent(eventInfo);
   });
 
-  socket.on('getEvents', function(id) {
+  socket.on('getEvents', function (id) {
     // console.log('id from get events in server file......', id);
     eventController.getEventList(id, socket);
   });
