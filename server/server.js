@@ -18,6 +18,7 @@ console.log('listening to port', port);
 
 // Sockets
 io.on('connection', function (socket) {
+
   socket.on('formData', function (eventInfo) {
     // console.log("inside socket....", eventInfo);
     eventController.postEvent(eventInfo);
@@ -37,6 +38,7 @@ io.on('connection', function (socket) {
     // console.log("inside socket updateCoords....", coords);
     eventController.updateLocation(coords);
   });
+  
 });
 
 module.exports = app;
